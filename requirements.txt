@@ -1,0 +1,8 @@
+fastapi
+pydantic
+uvicorn
+loguru
+scikit-learn
+numpy
+sentence-transformers
+pytest
