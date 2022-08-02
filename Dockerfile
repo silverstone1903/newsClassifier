@@ -1,15 +1,11 @@
-FROM python:3.7-slim
+FROM public.ecr.aws/lambda/python:3.8
 
-WORKDIR /project
+COPY . .
 
-# Copy over contents from local directory to the path in Docker container
-COPY . /project/
+# RUN pip install -r requirements.txt
+# caching https://stackoverflow.com/a/57282479
+RUN --mount=type=cache,target=/root/.cache/pip pip install -r requirements.txt
+RUN python3 -c "from sentence_transformers import SentenceTransformer; model = SentenceTransformer('sentence-transformers/all-mpnet-base-v2');"
+RUN pip cache purge
 
-# Install python requirements from requirements.txt
-RUN pip install --no-cache-dir --upgrade -r requirements.txt
-
-# WORKDIR /project/app
-EXPOSE 80
-
-# Start uvicorn server
-CMD ["uvicorn", "app.server:app", "--host", "0.0.0.0", "--port", "80"]
+CMD [ "lambda_function.lambda_handler" ] 
