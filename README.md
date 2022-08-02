@@ -3,92 +3,9 @@
 
 In the project this week, we will focus on model deployment for the news classification model that we trained in week 1, and evaluated in week 2.
 
-1. We will build a simple web application backend using FastAPI and Uvicorn that wraps our trained model, and exposes an endpoint to make predictions on live traffic that is sent to the endpoint.
-2. We will learn how to wrap our application in a Linux container using Docker. This is a standard practice when we want to deploy our application in a cloud environment such as AWS or Google Cloud. 
-3. We will test our web application and Docker container by sending it live traffic (on our local machine) and logging the model predictions.
-4. We will write some integration tests to test our Docker container is running fine before deployment
-5. [advanced & optional] we will prepare to deploy as a serverless function using AWS Lambda, getting it working locally
+1. [advanced & optional] we will prepare to deploy as a serverless function using AWS Lambda, getting it working locally
 
-## [Step 1] Download & Install Prerequisites:
-
-### Download the instructions & starter code:
-
-
-```
-project
-│   README.md
-│   Dockerfile
-│   requirements.txt
-|   test_app.py
-|   __init__.py
-└───app
-│   │   server.py
-│   │   __init__.py
-|
-└───data
-    │   news_classifier.joblib
-    |   logs.out
-```
-
-Go to the `project` directory from the command line. This will be the home directory for your project. All command line commands that follow are from this directory.
-
-
-### Install Docker
-
-Download and install Docker. You can follow the steps in [this document](https://docs.docker.com/get-docker/). 
-
-If you are new to Docker, we suggest spending some time to get familiar with the Docker command line and dashboard. Docker's [getting started](https://docs.docker.com/get-started/) page is a good resource.
-
-## [Step 2] Create a FastAPI web application to serve model predictions
-
-1. Before getting started on the web application changes, make sure you can run the starter web server code:
-
-```bash
-uvicorn app.server:app
-```
-
-You should see an output like:
-```bash
-INFO:     Started server process [5749]
-INFO:     Waiting for application startup.
-2022-07-21 20:46:59.898 | INFO     | server:startup_event:109 - Setup completed
-INFO:     Application startup complete.
-INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
-```
-
-When you go to `http://127.0.0.1:8000` from a web browser, you should see this text output:
-`{"Hello": "World"}`:
-
-
-2. We are now ready to get started on writing the code! All the required code changes for this project are in `app/server.py`. Comments in this file will help you understand the changes we need to make to create our web application to make model predictions. Once the code changes are done, you can start the web server again using the command from the above step.
-
-3. Test with an example request:
-
-Option 1: Using the web browser. 
-
-Visit `http://127.0.0.1:8000/docs`. You will see a /predict endpoint: 
-
-You can click on "Try it now" which will let you modify the input request. Click on "Execute" to see the model prediction response from the web server:
-
-Option 2: Using the command line.
-
-You can construct the POST request and send it to the web server from another tab in the command line as follows:
-
-```bash
-
-$ curl -X 'POST' \
-  'http://127.0.0.1:8000/predict' \
-  -H 'accept: application/json' \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "source": "<value>",
-  "url": "<value>",
-  "title": "<value>",
-  "description": "<value>"
-}'
-```
-
-## [Step 3] Containerize the application using Docker
+## [Step 1] Containerize the application using Docker
 
 1. Build the Docker Image
   
@@ -100,8 +17,7 @@ docker build -t newscls:latest .
 2. Start the container:
 
 ```bash
-
-docker run -d --rm --name  model -p 80:80 newscls:latest
+docker run -it --rm -d --name model -p 8080:8080 newscls:latest
 ```
 
 2.1 Stop the container:
@@ -110,28 +26,20 @@ docker run -d --rm --name  model -p 80:80 newscls:latest
 docker stop model
 ```	
 
-3. Test the Docker container with an example request:
+### Push commands for ECR
 
-Option 1: Using the web browser: Visit `http://0.0.0.0/docs` and follow the same guidelines as above.
-
-Option 2: Using the command line:
-
-```bash
-
-$ curl -X 'POST' \
-  'http://0.0.0.0/predict' \
-  -H 'accept: application/json' \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "source": "<value>",
-  "url": "<value>",
-  "title": "<value>",
-  "description": "<value>"
-}'
-
+```python
+pip install awscli.
+```
+* Authentication
+```
+aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin xxxx.dkr.ecr.region-1.amazonaws.com
 ```
 
-Option 3: Using Postman
+Create a registry in ECR
+```python
+aws ecr create-repository --repository-name repo-name # add your --profile if you have
+```
 
 
 
