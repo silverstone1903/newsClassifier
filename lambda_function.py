@@ -10,9 +10,10 @@ classifier = NewsCategoryClassifier(GLOBAL_CONFIG)
 
 
 def lambda_handler(event, context):
-    source = event["source"]
-    url = event["url"]
-    title = event["title"]
+    # source = event["source"]
+    # url = event["url"]
+    # title = event["title"]
     description = event["description"]
-    pred = classifier.predict_label(description)[0]
+    # pred = classifier.predict_label(description)[0]
+    pred = classifier.predict_proba(description)
     return pred

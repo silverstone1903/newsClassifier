@@ -1,1 +1,3 @@
-README.md
+*.ipynb
+*.md
+Dockerfile

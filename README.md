@@ -31,15 +31,16 @@ docker stop model
 ```python
 pip install awscli
 ```
+Create a registry in ECR
+```python
+aws ecr create-repository --repository-name repo-name # add your --profile if you have
+```
+
 * Authentication
 ```
 aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin xxxx.dkr.ecr.region-1.amazonaws.com
 ```
 
-Create a registry in ECR
-```python
-aws ecr create-repository --repository-name repo-name # add your --profile if you have
-```
 
 Tag and Push
 
@@ -49,3 +50,23 @@ docker push xxxx.dkr.ecr.region-1.amazonaws.com/newscls:latest
 ```
 
 Then create Lambda function using `Container image`. Optionally you can add API Gateway to the function.
+
+
+
+### Test API Gateway Endpoint
+
+Lambda function just takes `description`, no need to other variables (no logging etc.)
+
+```python
+import requests
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
+
+url = "https://uacqaayaij.execute-api.eu-central-1.amazonaws.com/api/predict"
+data = {
+    "description": "A capsule carrying solar material from the Genesis space probe has made a crash landing at a US Air Force training facility in the US state of Utah."
+}
+result = requests.post(url, json=data).json()
+pp.pprint(result)
+
+```

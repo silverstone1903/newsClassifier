@@ -38,11 +38,12 @@ class TransformerFeaturizer(BaseEstimator, TransformerMixin):
 class NewsCategoryClassifier:
     def __init__(self, config: dict) -> None:
         self.config = config
-        sentence_transfomer = SentenceTransformer(
-            "sentence-transformers/{model}".format(
-                model=GLOBAL_CONFIG["model"]["featurizer"]["sentence_transformer_model"]
-            )
-        )
+        sentence_transfomer = SentenceTransformer("./model")
+        # sentence_transfomer = SentenceTransformer(
+        #     "sentence-transformers/{model}".format(
+        #         model=GLOBAL_CONFIG["model"]["featurizer"]["sentence_transformer_model"]
+        #     )
+        # )
         dim = GLOBAL_CONFIG["model"]["featurizer"]["sentence_transformer_embedding_dim"]
         featurizer = TransformerFeaturizer(dim, sentence_transfomer)
         model = joblib.load(
